@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Animated Clock</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #0a0a0a;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            perspective: 1200px; 
+        }
+        .date-display {
+            color: #00ffcc;
+            font-size: 24px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            transform: translateZ(50px);
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+        }
+        .clock-container {
+            display: flex;
+            gap: 20px;
+            transform-style: preserve-3d;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: rotateY(-15deg) rotateX(10deg) translateY(0); }
+            50% { transform: rotateY(15deg) rotateX(-5deg) translateY(-20px); }
+        }
+        .digit-group {
+            display: flex;
+            gap: 8px;
+            transform-style: preserve-3d;
+        }
+        .digit-card {
+            position: relative;
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(145deg, #222, #111);
+            border: 1px solid #333;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 70px;
+            font-weight: bold;
+            color: #ffffff;
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.8),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        .digit-card.flip {
+            transform: rotateX(360deg);
+        }
+        .colon {
+            font-size: 80px;
+            color: #00ffcc;
+            display: flex;
+            align-items: center;
+            transform: translateZ(30px);
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; text-shadow: 0 0 20px rgba(0, 255, 204, 0.8); }
+            50% { opacity: 0.2; text-shadow: none; }
+        }
+        body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    perspective: 1200px;
+    background: linear-gradient(-45deg, #050505, #112222, #050a0a, #000000);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+body::before {
+    content: "";
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background-image: 
+        linear-gradient(rgba(0, 255, 204, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 204, 0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: -1;
+    transform: rotateX(70deg) translateY(0); 
+    animation: movingGrid 10s linear infinite;
+}
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+@keyframes movingGrid {
+    0% { transform: rotateX(70deg) translateY(0); }
+    100% { transform: rotateX(70deg) translateY(50px); }  
+}
+    </style>
+</head>
+<body>
+    <div class="date-display" id="date"></div>
+    <div class="clock-container">
+        <!-- Hours -->
+        <div class="digit-group" id="hours-group">
+            <div class="digit-card" id="h1">0</div>
+            <div class="digit-card" id="h2">0</div>
+        </div>
+        <div class="colon">:</div>
+        <div class="digit-group" id="mins-group">
+            <div class="digit-card" id="m1">0</div>
+            <div class="digit-card" id="m2">0</div>
+        </div>
+        <div class="colon">:</div>
+        <div class="digit-group" id="secs-group">
+            <div class="digit-card" id="s1">0</div>
+            <div class="digit-card" id="s2">0</div>
+        </div>
+    </div>
+    <script>
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        function updateDigit(id, newValue) {
+            const element = document.getElementById(id);
+            if (element.innerText !== newValue) {
+                element.classList.remove('flip');
+                void element.offsetWidth; 
+                element.classList.add('flip');
+                setTimeout(() => {
+                    element.innerText = newValue;
+                }, 150);
+            }
+        }
+        function clock() {
+            let today = new Date();
+            document.getElementById('date').innerText = 
+                `${dayNames[today.getDay()]} ${today.getDate()} ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+            let h = today.getHours().toString().padStart(2, '0');
+            let m = today.getMinutes().toString().padStart(2, '0');
+            let s = today.getSeconds().toString().padStart(2, '0');
+            updateDigit('h1', h[0]);
+            updateDigit('h2', h[1]);
+            updateDigit('m1', m[0]);
+            updateDigit('m2', m[1]);
+            updateDigit('s1', s[0]);
+            updateDigit('s2', s[1]);
+        }
+        setInterval(clock, 1000);
+        clock();
+    </script>
+</body>
+</html>
